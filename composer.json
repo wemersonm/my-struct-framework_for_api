@@ -1,0 +1,21 @@
+{
+    "name": "wemerson/struct-folders",
+    "autoload": {
+        "psr-4": {
+            "app\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "wemersonm",
+            "email": "wemersonmoura02@gmail.com"
+        }
+    ],
+    "files":[
+        
+    ],
+    "require": {
+        "symfony/var-dumper": "^6.3",
+        "vlucas/phpdotenv": "^5.5"
+    }
+}
