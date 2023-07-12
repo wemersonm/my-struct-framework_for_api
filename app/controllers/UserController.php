@@ -5,9 +5,11 @@ namespace app\controllers;
 class UserController
 {
     public function show(string|array $param){
-        echo "Nome: {$param[0]} <br>Id: {$param[1]}";
+      echo json_encode(['action' => 'show','data' => $param]);
+      die;
     }
     public function delete(string|array $param){
-        echo "id: {$param} <br> DELETANDO 3, 2, 1 ...";
+        echo json_encode(['action'=> 'delete', 'data'=> $param]);
+        die;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace app\controllers;
+use app\models\Connection;
 
 class HomeController
 {

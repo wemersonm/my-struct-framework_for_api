@@ -1,8 +1,13 @@
 <?php
 
+require 'bootstrap.php';
+
+header('Access-Control-Allow-Origin: *');
+header('Content-Type: application/json');
+
+
+
 use app\core\Route;
 
-require 'bootstrap.php';
-dd($_ENV);
-
-Route::run();
+$route = new Route();
+$route->run($router);

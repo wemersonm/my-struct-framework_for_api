@@ -2,28 +2,45 @@
 
 namespace app\core;
 
+use app\supports\Middleware;
 use Exception;
 
 class Controller
 {
-    public function execute(string $route)
+    public function execute(array $route, FilterRoute $routes)
     {
-        list($controller, $method) = explode("@", $route);
+        list($controller, $method) = explode("@", $route['controller']);
 
-        $path = dirname(__FILE__, 2);
-        if (!file_exists($path . "/controllers/" . $controller . ".php")) {
+        $controllerWithNamespace = $this->controllerWithNamespace($controller, $route);
+
+        if (!class_exists($controllerWithNamespace)) {
             throw new Exception("O Controller {$controller} não existe !");
         }
-        $controllerWithNamespace = "app\\controllers\\" . $controller;
         $instanceController = new $controllerWithNamespace();
         if (!method_exists($instanceController, $method)) {
             throw new Exception("O método {$method} não existe !");
-        }
-        $getParams = new Params();
+        };
         $params = '';
-        if (!empty($params)) {
-            $params = $getParams->get($route);
+        if (isset($route['uri']) && !empty($route['uri'])) {
+            $params = $routes->getParams($route['uri'], $route['paramAliases']);
         }
-        $instanceController->$method($params);
+
+        if(!empty($route['options']) && isset($route['options']['middlewares'])){
+            
+            (new Middleware($route['options']['middlewares']))->execute();
+        }
+
+
+
+        call_user_func_array([$instanceController, $method], [$params]);
+    }
+
+    private function controllerWithNamespace(string $controller, array $route)
+    {
+        $controllerWithNamespace = "app\\controllers\\" . $controller;
+        if (!empty($route['options']) && !empty($route['options']['controller'])) {
+            $controllerWithNamespace = "app\\controllers\\" . $route['options']['controller'] . "\\" . $controller;
+        }
+        return $controllerWithNamespace;
     }
 }

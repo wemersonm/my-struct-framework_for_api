@@ -10,32 +10,73 @@ class FilterRoute
     private string $request;
     private array $routes;
 
-    public function __construct()
+    private array $wildcards = [
+        "(:numeric)" => "[0-9]+",
+        "(:alpha)" => "[a-z]+",
+        "(:any)" => "[a-z0-9\-]+",
+    ];
+
+    public function __construct(Routers $routes)
     {
+
         $this->request = $_SERVER['REQUEST_METHOD'];
-        $this->uri = parse_url($_SERVER['REQUEST_URI'])['path'];
-        $this->routes = Routers::get();
+        $this->uri = $_SERVER['REQUEST_URI'] !== '/' ? rtrim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/') : '/';
+        $this->routes = $this->transformRoutes($routes->get());
     }
 
-    public function exactURL(): string|null
+    public function exactURL(): ?array
     {
-        if (array_key_exists($this->uri, $this->routes[$this->request])) {
-            return $this->routes[$this->request][$this->uri];
-        }
-        return null;
-    }
-    public function dynamicURL(): string|null
-    {
-        foreach ($this->routes[$this->request] as $route => $value) {
-            $regex = str_replace("/", "\/", $route);
-            if (preg_match("/^$regex$/", $this->uri)) {
-                return $value;
+        foreach ($this->routes as $key => &$route) {
+            if ($route['request'] == $this->request && $this->uri == $route['uri']) {
+                return $route;
             }
         }
         return null;
     }
-    public function get(): string
+    public function dynamicURL(): ?array
     {
-        return $this->exactURL() ?? ($this->dynamicURL() ?? "NotFoundController@index");
+        foreach ($this->routes as $key => $route) {
+            $regex = str_replace("/", "\/", trim($route['uri'], "/"));
+            $uri = $this->uri;
+            if (preg_match("/^$regex$/", trim($uri, "/"))) {
+                return $route;
+            }
+        }
+        return null;
+    }
+    public function get(): array|string
+    {
+        return $this->exactURL() ?? ($this->dynamicURL() ?? ['controller' => "NotFoundController@index"]);
+    }
+
+    public function getParams(string $route, array $paramAliases): array|string
+    {
+        $arrayUri = explode("/", ltrim($this->uri, "/"));
+        $arrayRoute = explode("/", ltrim($route, "/"));
+        $diff = array_diff($arrayUri, $arrayRoute);
+        $indexAliases = 0;
+        if (!empty($paramAliases)) {
+            foreach ($diff as $key => $param) {
+                $diff[$paramAliases[$indexAliases]] = $param;
+                unset($diff[$key]);
+                $indexAliases++;
+            }
+        }
+        return $diff;
+    }
+
+    public function transformRoutes(array $routes): array
+    {
+        foreach ($routes as $key => &$route) {
+            foreach ($this->wildcards as $wildcard => $regex) {
+                if (str_contains($route['uri'], $wildcard)) {
+                    $route['uri'] = str_replace($wildcard, $regex, $route['uri']);
+                }
+            }
+            if (isset($route['options']) && !empty($route['options']) && !empty($route['options']['prefix']) ) {
+                $route['uri'] = rtrim("/{$route['options']['prefix']}{$route['uri']}", "/");
+            }
+        }
+        return $routes;
     }
 }
