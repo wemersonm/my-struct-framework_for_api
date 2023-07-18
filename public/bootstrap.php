@@ -2,6 +2,7 @@
 
 require '../vendor/autoload.php';
 require '../app/routes/web.php';
+session_start();
 
 use Dotenv\Dotenv;
 

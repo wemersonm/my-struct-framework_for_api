@@ -8,7 +8,7 @@ class Teste implements MiddlewareInterface
 {
     public function execute()
     {
-        echo "Middleware Teste";
+        //echo "Middleware Teste";
     }
 
     

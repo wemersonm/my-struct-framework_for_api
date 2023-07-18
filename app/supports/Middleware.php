@@ -8,6 +8,7 @@ use Exception;
 class Middleware
 {
     private string $middlewareClass;
+
     public function __construct(public array $middlewares)
     {
     }
@@ -17,7 +18,7 @@ class Middleware
 
         $middlewareCases = RouteMiddlewares::cases(); // enum
         return array_filter($middlewareCases, function (RouteMiddlewares $middlewareCase) use ($middleware) {
-           
+
             if ($middlewareCase->name == $middleware) {
                 $this->middlewareClass = $middlewareCase->value;
                 return true;

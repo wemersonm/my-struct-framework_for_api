@@ -25,11 +25,10 @@ class Controller
             $params = $routes->getParams($route['uri'], $route['paramAliases']);
         }
 
-        if(!empty($route['options']) && isset($route['options']['middlewares'])){
-            
+        if (!empty($route['options']) && isset($route['options']['middlewares'])) {
+           
             (new Middleware($route['options']['middlewares']))->execute();
         }
-
 
 
         call_user_func_array([$instanceController, $method], [$params]);
