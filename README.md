@@ -8,4 +8,6 @@
    <li>QueryBuilder</li>
    <li>Classe de validation de dados onde definir regras de validação e executar a validação dos dados</li>
    <li>.env</li>  
+   <li>Encode/Decode JWT</li>  
+  
 </ul>
