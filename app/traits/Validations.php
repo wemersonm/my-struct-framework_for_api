@@ -77,7 +77,6 @@ class Validations
         }
         return $value;
     }
-
     public function min(string $field, string $number)
     {
         $value = trim(Request::input($field));
@@ -107,7 +106,6 @@ class Validations
         }
         return $value;
     }
-
     public function regex(string $field, string $pattern)
     {
         $value = trim(Request::input($field));
@@ -118,7 +116,6 @@ class Validations
         }
         return $value;
     }
-
     public function date(string $field)
     {
         $value = trim(Request::input($field));
@@ -129,7 +126,6 @@ class Validations
         }
         return $value;
     }
-
     public function between(string $field, mixed $param)
     {
         $value = trim(Request::input($field));
@@ -152,7 +148,6 @@ class Validations
         }
         return ($value == $param) ? false : $value;
     }
-
     public function same(string $field, string $param)
     {
         $value = trim(Request::input($field));

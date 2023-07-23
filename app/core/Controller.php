@@ -24,7 +24,7 @@ class Controller
         if (isset($route['uri']) && !empty($route['uri'])) {
             $params = $routes->getParams($route['uri'], $route['paramAliases']);
         }
-
+        $dataJWT = null;
         if (!empty($route['options']) && isset($route['options']['middlewares'])) {
            
             (new Middleware($route['options']['middlewares']))->execute();
